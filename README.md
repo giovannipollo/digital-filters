@@ -28,9 +28,5 @@ where:
 - $b_i$ is the value of the impulse response at time $i$
 
 > [!CAUTION]
-> The relation between the filter order and the taps is the following:
-> $$
-> filter\_order = taps - 1
->$$
-> So, for example, a filter of 5th order has 6 taps
+> The filter order is the taps minus one. So, for example, a filter of 5th order has 6 taps
 
