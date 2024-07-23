@@ -33,3 +33,7 @@ where:
 > [!TIP]
 > $x[n-i]$ are commonly referred as taps
 
+
+## Computing the impulse response
+
+The only parameters that we need to know to implement a FIR filter are the values of the impulse response. To compute it, we can use the Sinc method, which is already implemented in scikit-learn library ([https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.firwin.html](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.firwin.html)). However, to make everything from scratch, in this repository, we implemented it from scratch. 
