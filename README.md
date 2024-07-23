@@ -30,3 +30,6 @@ where:
 > [!CAUTION]
 > The filter order is the taps minus one. So, for example, a filter of 5th order has 6 taps
 
+> [!TIP]
+> $x[n-i]$ are commonly referred as taps
+
