@@ -37,5 +37,6 @@ class IIRArray:
                     y[n] += b[k] * x[n - k]
             for k in range(1, taps):
                 if n - k >= 0:
-                    y[n] += a[k] * y[n - k]
+                    y[n] -= a[k] * y[n - k]
+            y[n] = y[n] / a[0]
         return y

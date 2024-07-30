@@ -1,16 +1,14 @@
+from utils.coefficient import compute_impulse_response_coefficient
+from iir_array.iir_array import IIRArray
 import numpy as np
 
-def compute_impulse_response_coefficient(filter_order: int, fc: float) -> np.array:
-    """
-    Compute the impulse response coefficients of a butterworth filter
-
-    Args:
-        filter_order (int): filter order
-        fc (float): cutoff frequency (normalized to Nyquist frequency). You should pass the cutoff frequency divided by 2 with respect to the cutoff frequency in Hz.
-
-    Returns:
-        h_w: np.array, impulse response coefficients
-    """
-    
-
 if __name__ == "__main__":
+    filter_order = 4  # Filter order
+    fc = [0.4, 4]  # Cutoff frequency
+    fs = 64  # Sampling frequency
+
+    b, a = compute_impulse_response_coefficient(
+        filter_order=filter_order, fc=fc, band_type="bandpass", fs=fs
+    )
+    print("b: ", b)
+    print("a: ", a)
