@@ -9,7 +9,7 @@ def compute_impulse_response_coefficient(
     fc: Union[float, list[float]] = 1,
     filter_type: str = "butter",
     band_type: Literal["low", "high", "band", "bandpass", "bandstop"] = "bandpass",
-) -> np.array:
+) -> tuple[list, list]:
     """
     Compute the impulse response coefficients of a low-pass filter using a sinc function and a window hamming function.
 
@@ -21,7 +21,7 @@ def compute_impulse_response_coefficient(
         band_type (str): band type, default is 'low'
 
     Returns:
-        h_w: np.array, impulse response coefficients
+        tuple: impulse response coefficients in the form of a tuple (b, a)
     """
     if filter_type == "butter":
         if band_type == "bandpass":
