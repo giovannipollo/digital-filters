@@ -6,8 +6,8 @@ class AdaptiveLMSFilterSingleSample:
         Initialize the adaptive LMS filter.
         
         Args:
-        - num_taps (int): The number of filter taps (filter length).
-        - mu (float): The learning rate (step size).
+            num_taps (int): The number of filter taps (filter length).
+            mu (float): The learning rate (step size).
         """
         self.num_taps = num_taps
         self.mu = mu
@@ -19,12 +19,12 @@ class AdaptiveLMSFilterSingleSample:
         Adapt the filter to minimize the error between the filter output and the desired signal.
         
         Args:
-        - x (float): The current input sample.
-        - desired_signal (float): The current desired sample (reference).
+            x (float): The current input sample.
+            desired_signal (float): The current desired sample (reference).
         
         Returns:
-        - output (float): The output of the filter.
-        - error (float): The error signal.
+            output (float): The output of the filter.
+            error (float): The error signal.
         """
         # Shift buffer and add new input sample
         self.buffer[1:] = self.buffer[:-1]  # Shift buffer to the right
