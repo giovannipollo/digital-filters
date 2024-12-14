@@ -8,6 +8,7 @@ import yaml
 from scipy import signal
 from iir_array.iir_array import IIRArray
 from iir_single_sample.iir_single_sample import IIRSingleSample
+from iir_window.iir_window import IIRWindow
 
 def test_apply_iir_filter_array():
     # Load input signal
@@ -23,6 +24,43 @@ def test_apply_iir_filter_array():
     # Create IIRArray instance and apply filter
     iir_array = IIRArray(b=b, a=a)
     y = iir_array.apply_iir_filter(x=input_signal)
+
+    # Compute the expected output signal with scipy
+    y_scipy = signal.lfilter(b=b, a=a, x=input_signal)
+
+    # Compute the mean squared error
+    mse = np.mean((y - y_scipy) ** 2)
+    mae = np.mean(np.abs(y - y_scipy))
+    max_abs_diff = np.max(np.abs(y - y_scipy))
+
+    assert mse < 1e-10
+    assert mae < 1e-5
+    assert max_abs_diff < 1e-5
+
+def test_apply_iir_filter_window():
+    # Load input signal
+    with open("src/iir/test/input_signal.txt", "rb") as f:
+        input_signal = np.loadtxt(f)
+
+    # Load coefficients
+    with open("src/iir/test/coefficient.yaml") as f:
+        coefficient = yaml.safe_load(f)
+    b = coefficient["b"]
+    a = coefficient["a"]
+
+    # Create IIRWindow instance and apply filter
+    iir_window = IIRWindow(b=b, a=a)
+
+    window_length_samples = 512
+    window_shift_samples = 64
+    y = np.zeros_like(input_signal)
+    first_window = True
+    for i in range(0, len(input_signal), window_shift_samples):
+        if first_window:
+            y[i:i+window_length_samples] = iir_window.apply_iir_filter(x=input_signal[i:i+window_length_samples])
+            first_window = False
+        else:
+            y[i + window_length_samples - window_shift_samples:i+window_length_samples] = iir_window.apply_iir_filter(x=input_signal[i + window_length_samples - window_shift_samples:i+window_length_samples])
 
     # Compute the expected output signal with scipy
     y_scipy = signal.lfilter(b=b, a=a, x=input_signal)
