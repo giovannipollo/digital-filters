@@ -1,5 +1,6 @@
 import sys
 import os
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pytest
@@ -9,6 +10,7 @@ from scipy import signal
 from iir_array.iir_array import IIRArray
 from iir_single_sample.iir_single_sample import IIRSingleSample
 from iir_window.iir_window import IIRWindow
+
 
 def test_apply_iir_filter_array():
     # Load input signal
@@ -37,6 +39,7 @@ def test_apply_iir_filter_array():
     assert mae < 1e-5
     assert max_abs_diff < 1e-5
 
+
 def test_apply_iir_filter_window():
     # Load input signal
     with open("src/iir/test/input_signal.txt", "rb") as f:
@@ -57,10 +60,24 @@ def test_apply_iir_filter_window():
     first_window = True
     for i in range(0, len(input_signal), window_shift_samples):
         if first_window:
-            y[i:i+window_length_samples] = iir_window.apply_iir_filter(x=input_signal[i:i+window_length_samples])
+            y[i : i + window_length_samples] = iir_window.apply_iir_filter(
+                x=input_signal[i : i + window_length_samples]
+            )
             first_window = False
         else:
-            y[i + window_length_samples - window_shift_samples:i+window_length_samples] = iir_window.apply_iir_filter(x=input_signal[i + window_length_samples - window_shift_samples:i+window_length_samples])
+            y[
+                i
+                + window_length_samples
+                - window_shift_samples : i
+                + window_length_samples
+            ] = iir_window.apply_iir_filter(
+                x=input_signal[
+                    i
+                    + window_length_samples
+                    - window_shift_samples : i
+                    + window_length_samples
+                ]
+            )
 
     # Compute the expected output signal with scipy
     y_scipy = signal.lfilter(b=b, a=a, x=input_signal)
@@ -73,6 +90,7 @@ def test_apply_iir_filter_window():
     assert mse < 1e-10
     assert mae < 1e-5
     assert max_abs_diff < 1e-5
+
 
 def test_apply_iir_filter_single_sample():
     # Load input signal
@@ -103,5 +121,6 @@ def test_apply_iir_filter_single_sample():
     assert mae < 1e-5
     assert max_abs_diff < 1e-5
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     pytest.main()
