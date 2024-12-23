@@ -11,17 +11,51 @@ def compute_impulse_response_coefficient(
     band_type: Literal["low", "high", "band", "bandpass", "bandstop"] = "bandpass",
 ) -> tuple[list, list]:
     """
-    Compute the impulse response coefficients of a low-pass filter using a sinc function and a window hamming function.
+    Compute impulse response coefficients for digital Butterworth filters.
+
+    This function wraps scipy.signal.butter to generate filter coefficients for
+    various filter configurations. It includes input validation and proper error
+    handling for different band types.
 
     Args:
-        filter_order (int): filter order, default is 1
-        fs (float): sampling frequency, default is 2Hz
-        fc (float): cutoff frequency. If it is a list, it is a bandpass filter, default is 1Hz
-        filter_type (str): filter type, default is 'butter'
-        band_type (str): band type, default is 'low'
+        filter_order (int): Order of the filter. Higher orders give sharper frequency cutoffs.
+        Defaults to 1.
+        fs (float): Sampling frequency in Hz. Defaults to 2Hz.
+        fc (float | list[float]): Cutoff frequency in Hz. For bandpass filters, provide
+        [low_freq, high_freq]. For low/high pass, provide single frequency.
+        Defaults to 1Hz.
+        filter_type (str): Type of filter to design. Currently only supports 'butter'
+        for Butterworth filters.
+        band_type (str): Filter response type:
+            - 'low': lowpass filter
+            - 'high': highpass filter
+            - 'bandpass': bandpass filter (requires fc as [low, high])
+        Defaults to 'bandpass'.
 
     Returns:
-        tuple: impulse response coefficients in the form of a tuple (b, a)
+        tuple[list, list]: Filter coefficients (b, a) where:
+            - b: numerator coefficients
+            - a: denominator coefficients
+
+    Raises:
+        ValueError: If band_type/filter_type combination is invalid or if fc format
+        doesn't match the band_type requirements.
+
+    Example:
+        >>> # Create a lowpass Butterworth filter at 30Hz, sampling at 1kHz
+        >>> b, a = compute_impulse_response_coefficient(
+        ...     filter_order=4,
+        ...     fs=1000,
+        ...     fc=30,
+        ...     band_type='low'
+        ... )
+        >>> # Create a bandpass filter between 20-50Hz
+        >>> b, a = compute_impulse_response_coefficient(
+        ...     filter_order=4,
+        ...     fs=1000,
+        ...     fc=[20, 50],
+        ...     band_type='bandpass'
+        ... )
     """
     if filter_type == "butter":
         if band_type == "bandpass":
@@ -31,6 +65,16 @@ def compute_impulse_response_coefficient(
                 if band_type == "bandpass" and not isinstance(fc, list):
                     raise ValueError(
                         "fc must be a list when band_type is 'bandpass'"
+                    ) from e
+                else:
+                    raise e
+        elif band_type == "low" or band_type == "high":
+            try:
+                b, a = signal.butter(N=filter_order, Wn=fc, btype=band_type, fs=fs)
+            except Exception as e:
+                if band_type == "low" or band_type == "high" and isinstance(fc, list):
+                    raise ValueError(
+                        "fc must be a float when band_type is 'low' or 'high'"
                     ) from e
                 else:
                     raise e

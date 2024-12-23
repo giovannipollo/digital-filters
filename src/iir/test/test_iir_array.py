@@ -18,7 +18,7 @@ def test_apply_iir_filter_array():
         input_signal = np.loadtxt(f)
 
     # Load coefficients
-    with open("src/iir/test/coefficient.yaml") as f:
+    with open("src/iir/test/coefficient_4th_order.yaml") as f:
         coefficient = yaml.safe_load(f)
     b = coefficient["b"]
     a = coefficient["a"]
@@ -46,7 +46,7 @@ def test_apply_iir_filter_window():
         input_signal = np.loadtxt(f)
 
     # Load coefficients
-    with open("src/iir/test/coefficient.yaml") as f:
+    with open("src/iir/test/coefficient_4th_order.yaml") as f:
         coefficient = yaml.safe_load(f)
     b = coefficient["b"]
     a = coefficient["a"]
@@ -98,7 +98,7 @@ def test_apply_iir_filter_single_sample():
         input_signal = np.loadtxt(f)
 
     # Load coefficients
-    with open("src/iir/test/coefficient.yaml") as f:
+    with open("src/iir/test/coefficient_4th_order.yaml") as f:
         coefficient = yaml.safe_load(f)
     b = coefficient["b"]
     a = coefficient["a"]
@@ -120,6 +120,26 @@ def test_apply_iir_filter_single_sample():
     assert mse < 1e-10
     assert mae < 1e-5
     assert max_abs_diff < 1e-5
+
+
+def test_coefficient():
+    # Load coefficients
+    with open("src/iir/test/coefficient_4th_order.yaml") as f:
+        coefficient = yaml.safe_load(f)
+    b = coefficient["b"]
+    a = coefficient["a"]
+
+    # Compute the coefficients with scipy
+    b_scipy, a_scipy = signal.iirfilter(
+        N=4, Wn=[0.4, 4], btype="band", ftype="butter", fs=64
+    )
+
+    # Compute the mean squared error
+    mse_b = np.mean((b - b_scipy) ** 2)
+    mse_a = np.mean((a - a_scipy) ** 2)
+
+    assert mse_b < 1e-10
+    assert mse_a < 1e-10
 
 
 if __name__ == "__main__":

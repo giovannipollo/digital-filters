@@ -1,0 +1,17 @@
+description: |
+  Coefficients for a 2nd order bandpass IIR filter with cutoff frequencies of 0.4 and 4 Hz, and a
+  sampling frequency of 64 Hz. The filter is a Butterworth filter with a quality factor Q of 0.707.
+
+b:
+  - 0.02482791
+  - 0.0
+  - -0.04965581
+  - 0.0
+  - 0.02482791
+
+a:
+  - 1.0
+  - -3.48015288
+  - 4.57337369
+  - -2.69979125
+  - 0.60675903

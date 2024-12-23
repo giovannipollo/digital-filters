@@ -1,3 +1,7 @@
+description: |
+  Coefficients for a 4th order bandpass IIR filter with cutoff frequencies of 0.4 and 4 Hz, and a
+  sampling frequency of 64 Hz. The filter is a Butterworth filter with a quality factor Q of 0.707.
+
 b:
   - 0.00063903
   - 0.0
