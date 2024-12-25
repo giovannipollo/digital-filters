@@ -10,6 +10,7 @@ from scipy import signal
 from iir_array.iir_array import IIRArray
 from iir_single_sample.iir_single_sample import IIRSingleSample
 from iir_window.iir_window import IIRWindow
+from utils.coefficient import split_iir_filter
 
 
 def test_apply_iir_filter_array():
@@ -122,7 +123,7 @@ def test_apply_iir_filter_single_sample():
     assert max_abs_diff < 1e-5
 
 
-def test_coefficient():
+def test_4th_order_coefficient():
     # Load coefficients
     with open("src/iir/test/coefficient_4th_order.yaml") as f:
         coefficient = yaml.safe_load(f)
@@ -141,6 +142,34 @@ def test_coefficient():
     assert mse_b < 1e-10
     assert mse_a < 1e-10
 
+
+def test_double_2nd_order_filter():
+    # Load coefficients
+    with open("src/iir/test/coefficient_4th_order.yaml") as f:
+        coefficient = yaml.safe_load(f)
+
+    b = coefficient["b"]
+    a = coefficient["a"]
+
+    (b1, a1), (b2, a2) = split_iir_filter(b=b, a=a)
+
+    # Load input signal
+    with open("src/iir/test/input_signal.txt", "rb") as f:
+        input_signal = np.loadtxt(f)
+
+    y_scipy_intermediate = signal.lfilter(b=b1, a=a1, x=input_signal)
+    y_scipy = signal.lfilter(b=b2, a=a2, x=y_scipy_intermediate)
+
+    y_scipy_reference = signal.lfilter(b=b, a=a, x=input_signal)
+
+    # Compute the mean squared error
+    mse = np.mean((y_scipy - y_scipy_reference) ** 2)
+    mae = np.mean(np.abs(y_scipy - y_scipy_reference))
+    max_abs_diff = np.max(np.abs(y_scipy - y_scipy_reference))
+    
+    assert mse < 1e-10
+    assert mae < 1e-5
+    assert max_abs_diff < 1e-4
 
 if __name__ == "__main__":
     pytest.main()
