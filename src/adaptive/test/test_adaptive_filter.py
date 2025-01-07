@@ -186,8 +186,8 @@ def test_adaptive_filter_single_sample():
         learning_rate=learning_rate,
     )
 
-    with open("src/adaptive/test/y.txt", "wb") as f:
-        np.savetxt(f, y)
+    # with open("src/adaptive/test/y.txt", "wb") as f:
+    #     np.savetxt(f, y)
         
     # Do the mean over the channels of y
     y = (y[:, 0] + y[:, 1] + y[:, 2]) / 3
