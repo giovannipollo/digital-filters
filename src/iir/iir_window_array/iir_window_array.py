@@ -1,6 +1,6 @@
 import numpy as np
 
-class IIRWindow:
+class IIRWindowArray:
     def __init__(self, b, a):
         self.b = np.asarray(b)
         self.a = np.asarray(a)
@@ -53,8 +53,3 @@ class IIRWindow:
         self.y_history = y_extended[-self.taps+1:]
         
         return y
-    
-    def reset_state(self):
-        """Reset the filter's state buffers to zeros."""
-        self.x_history = np.zeros(self.taps - 1)
-        self.y_history = np.zeros(self.taps - 1)

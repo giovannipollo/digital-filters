@@ -7,7 +7,7 @@ class WindowedAdaptiveFilter:
         self.filter_order = filter_order
         self.learning_rate = learning_rate
         
-    def process_window(self, input_signal, desired_signal):
+    def process_window(self, input_signal: np.ndarray, desired_signal: np.ndarray):
         """
         Process signal in windows while maintaining filter state between windows.
         

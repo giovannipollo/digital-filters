@@ -9,7 +9,8 @@ import yaml
 from scipy import signal
 from iir_array.iir_array import IIRArray
 from iir_single_sample.iir_single_sample import IIRSingleSample
-from iir_window.iir_window import IIRWindow
+from iir.iir_window_array.iir_window_array import IIRWindowArray
+from iir.iir_window_single_sample.iir_window_single_sample import IIRWindowSingleSample
 from utils.coefficient import split_iir_filter
 
 
@@ -41,7 +42,7 @@ def test_apply_iir_filter_array():
     assert max_abs_diff < 1e-5
 
 
-def test_apply_iir_filter_window():
+def test_apply_iir_filter_window_array():
     # Load input signal
     with open("src/iir/test/input_signal.txt", "rb") as f:
         input_signal = np.loadtxt(f)
@@ -53,7 +54,7 @@ def test_apply_iir_filter_window():
     a = coefficient["a"]
 
     # Create IIRWindow instance and apply filter
-    iir_window = IIRWindow(b=b, a=a)
+    iir_window = IIRWindowArray(b=b, a=a)
 
     window_length_samples = 512
     window_shift_samples = 64
