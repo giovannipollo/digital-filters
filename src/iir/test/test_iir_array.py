@@ -10,7 +10,6 @@ from scipy import signal
 from iir_array.iir_array import IIRArray
 from iir_single_sample.iir_single_sample import IIRSingleSample
 from iir.iir_window_array.iir_window_array import IIRWindowArray
-from iir.iir_window_single_sample.iir_window_single_sample import IIRWindowSingleSample
 from utils.coefficient import split_iir_filter
 
 
