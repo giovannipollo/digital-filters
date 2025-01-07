@@ -1,42 +1,53 @@
 import numpy as np
 
-class AdaptiveLMSFilterSingleSample:
-    def __init__(self, num_taps: int, mu: float):
+class AdaptiveFilterSingleSample:
+    def __init__(self, num_taps: int, mu: float, num_channels: int = 3):
         """
-        Initialize the adaptive LMS filter.
+        Initialize the multi-channel adaptive LMS filter.
         
         Args:
-            num_taps (int): The number of filter taps (filter length).
-            mu (float): The learning rate (step size).
+            num_taps (int): The number of filter taps (filter length)
+            mu (float): The learning rate (step size)
+            num_channels (int): Number of input channels (default 3 for accelerometer)
         """
         self.num_taps = num_taps
         self.mu = mu
-        self.weights = np.zeros(num_taps)  # Initialize weights to zero
-        self.buffer = np.zeros(num_taps)   # Initialize buffer to store the input signal
+        self.num_channels = num_channels
+        
+        # Initialize weights and buffers for each channel
+        self.weights = np.zeros((num_channels, num_taps))
+        self.buffer = np.zeros((num_channels, num_taps))
 
-    def adapt(self, x: float, desired_signal: float):
+    def adapt(self, x: list, desired_signal: float):
         """
-        Adapt the filter to minimize the error between the filter output and the desired signal.
+        Adapt the filter for each channel.
         
         Args:
-            x (float): The current input sample.
-            desired_signal (float): The current desired sample (reference).
+            x (list): Current input samples [x, y, z] from accelerometer
+            desired_signal (float): Current desired sample
         
         Returns:
-            output (float): The output of the filter.
-            error (float): The error signal.
+            outputs (list): Filter outputs for each channel
+            errors (list): Error signals for each channel
         """
-        # Shift buffer and add new input sample
-        self.buffer[1:] = self.buffer[:-1]  # Shift buffer to the right
-        self.buffer[0] = x       # Insert the new sample at the beginning
+        if len(x) != self.num_channels:
+            raise ValueError(f"Expected {self.num_channels} channels, got {len(x)}")
 
-        # Filter output (dot product of weights and buffer)
-        output = np.dot(self.weights, self.buffer)
+        outputs = np.zeros(self.num_channels)
+        errors = np.zeros(self.num_channels)
 
-        # Calculate error (desired signal - filter output)
-        error = desired_signal - output
+        for channel in range(self.num_channels):
+            # Shift buffer and add new sample for current channel
+            self.buffer[channel, 1:] = self.buffer[channel, :-1]
+            self.buffer[channel, 0] = x[channel]
 
-        # Update weights using the LMS rule
-        self.weights += self.mu * error * self.buffer
+            # Compute output for current channel
+            outputs[channel] = np.dot(self.weights[channel], self.buffer[channel])
 
-        return output, error
+            # Calculate error
+            errors[channel] = desired_signal - outputs[channel]
+
+            # Update weights for current channel
+            self.weights[channel] += self.mu * errors[channel] * self.buffer[channel]
+
+        return outputs.tolist()
