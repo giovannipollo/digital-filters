@@ -41,13 +41,20 @@ class AdaptiveFilterSingleSample:
             self.buffer[channel, 1:] = self.buffer[channel, :-1]
             self.buffer[channel, 0] = x[channel]
 
+            # print("Channel:", channel)
+            # print("Buffer:", self.buffer[channel])
+            # print("Desired signal:", desired_signal)
             # Compute output for current channel
             outputs[channel] = np.dot(self.weights[channel], self.buffer[channel])
 
+            # print("Output signal:", outputs[channel])
             # Calculate error
             errors[channel] = desired_signal - outputs[channel]
-
+            
+            # print("Error signal:", errors[channel])
             # Update weights for current channel
             self.weights[channel] += self.mu * errors[channel] * self.buffer[channel]
 
+        #     print("Weights:", self.weights[channel])
+        # print("-----------------")
         return outputs.tolist()

@@ -1,6 +1,6 @@
 import numpy as np
 
-class WindowedAdaptiveFilter:
+class WindowedAdaptiveFilterTapir:
     def __init__(self, filter_order, learning_rate) -> None:
         self.prev_weights = None
         self.prev_input_buffer = None
