@@ -232,13 +232,9 @@ def test_adaptive_filter_single_sample():
     with open("src/adaptive/test/desired_signal.txt", "rb") as f:
         desired_signal = np.loadtxt(f)
 
-    # Load output signal
-    with open("src/adaptive/test/output_signal.txt", "rb") as f:
-        output_signal = np.loadtxt(f)
-
     AdaptiveFilterReference = AdaptiveFilter()
-    filter_order = 50
-    learning_rate = 8e-5
+    filter_order = 5
+    learning_rate = 0.01
     y = AdaptiveFilterReference.adaptive_filter(
         input_signal=input_signal,
         desired_signal=desired_signal,
@@ -246,14 +242,14 @@ def test_adaptive_filter_single_sample():
         learning_rate=learning_rate,
     )
 
-    # with open("src/adaptive/test/y.txt", "wb") as f:
+    # with open("src/adaptive/test/y.log", "wb") as f:
     #     np.savetxt(f, y)
         
     # Do the mean over the channels of y
     y = (y[:, 0] + y[:, 1] + y[:, 2]) / 3
 
     adaptive_filter_single_sample = AdaptiveFilterSingleSample(
-        num_taps=50, mu=8e-5, num_channels=3
+        num_taps=filter_order, mu=learning_rate, num_channels=3
     )
 
     y_single_sample = np.zeros_like(input_signal)
@@ -261,14 +257,17 @@ def test_adaptive_filter_single_sample():
         y_single_sample[i] = adaptive_filter_single_sample.adapt(
             x=input_signal[i], desired_signal=desired_signal[i]
         )
+    
+    # with open("src/adaptive/test/y_single_sample.log", "wb") as f:
+    #     np.savetxt(f, y_single_sample)
 
     # Do the mean over the channels of y_single_sample
     y_single_sample = (y_single_sample[:, 0] + y_single_sample[:, 1] + y_single_sample[:, 2]) / 3
 
-    mse = np.mean((y_single_sample - output_signal) ** 2)
-    mae = np.mean(np.abs(y_single_sample - output_signal))
-    max_abs_diff = np.max(np.abs(y_single_sample - output_signal))
-    
+    mse = np.mean((y_single_sample - y) ** 2)
+    mae = np.mean(np.abs(y_single_sample - y))
+    max_abs_diff = np.max(np.abs(y_single_sample - y))
+
     assert mse < 1e-2
     assert mae < 1e-2
     assert max_abs_diff < 1e-1
@@ -359,4 +358,5 @@ def test_adaptive_filter_simple():
     y_single_sample = (y_single_sample[:, 0] + y_single_sample[:, 1] + y_single_sample[:, 2]) / 3
 
 if __name__ == "__main__":
-    pytest.main()
+    # pytest.main()
+    test_adaptive_filter_single_sample()

@@ -17,6 +17,7 @@ class AdaptiveFilterSingleSample:
         # Initialize weights and buffers for each channel
         self.weights = np.zeros((num_channels, num_taps))
         self.buffer = np.zeros((num_channels, num_taps))
+        self.iteration = 0
 
     def adapt(self, x: list, desired_signal: float):
         """
@@ -36,12 +37,15 @@ class AdaptiveFilterSingleSample:
         outputs = np.zeros(self.num_channels)
         errors = np.zeros(self.num_channels)
 
+        # print("Iteration:", self.iteration)
+        # self.iteration += 1
         for channel in range(self.num_channels):
+            # if self.iteration > 10:
+            #     break
             # Shift buffer and add new sample for current channel
             self.buffer[channel, 1:] = self.buffer[channel, :-1]
             self.buffer[channel, 0] = x[channel]
 
-            # print("Channel:", channel)
             # print("Buffer:", self.buffer[channel])
             # print("Desired signal:", desired_signal)
             # print("Weights:", self.weights[channel])
@@ -56,6 +60,8 @@ class AdaptiveFilterSingleSample:
             # Update weights for current channel
             self.weights[channel] += self.mu * errors[channel] * self.buffer[channel]
 
-            # print("Weights Updated:", self.weights[channel])
+        #     print("Weights Updated:", self.weights[channel])
+        #     break
         # print("-----------------")
+
         return outputs.tolist()
