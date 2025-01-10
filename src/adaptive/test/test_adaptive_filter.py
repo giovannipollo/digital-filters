@@ -338,6 +338,25 @@ def test_adaptive_filter_single_sample_tapir():
     assert max_abs_diff < 1e-5
 
 
+
+def test_adaptive_filter_simple():
+    # Load input signal
+    input_signal = np.arange(5, 25)
+    input_signal = np.array([input_signal, input_signal, input_signal]).T
+    desired_signal = np.arange(30, 50)
+
+    adaptive_filter_single_sample = AdaptiveFilterSingleSample(
+        num_taps=5, mu=0.01, num_channels=3
+    )
+
+    y_single_sample = np.zeros_like(input_signal)
+    for i in range(len(input_signal)):
+        y_single_sample[i] = adaptive_filter_single_sample.adapt(
+            x=input_signal[i], desired_signal=desired_signal[i]
+        )
+        
+    # Do the mean over the channels of y_single_sample
+    y_single_sample = (y_single_sample[:, 0] + y_single_sample[:, 1] + y_single_sample[:, 2]) / 3
+
 if __name__ == "__main__":
-    test_adaptive_filter_reference()
-    # pytest.main()
+    pytest.main()

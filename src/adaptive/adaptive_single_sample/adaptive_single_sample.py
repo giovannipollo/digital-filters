@@ -44,6 +44,7 @@ class AdaptiveFilterSingleSample:
             # print("Channel:", channel)
             # print("Buffer:", self.buffer[channel])
             # print("Desired signal:", desired_signal)
+            # print("Weights:", self.weights[channel])
             # Compute output for current channel
             outputs[channel] = np.dot(self.weights[channel], self.buffer[channel])
 
@@ -55,6 +56,6 @@ class AdaptiveFilterSingleSample:
             # Update weights for current channel
             self.weights[channel] += self.mu * errors[channel] * self.buffer[channel]
 
-        #     print("Weights:", self.weights[channel])
+            # print("Weights Updated:", self.weights[channel])
         # print("-----------------")
         return outputs.tolist()
