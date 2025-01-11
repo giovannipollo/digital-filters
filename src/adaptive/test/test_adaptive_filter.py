@@ -307,8 +307,8 @@ def test_adaptive_filter_single_sample_tapir():
         learning_rate=learning_rate,
     )
 
-    with open("src/adaptive/test/y.txt", "wb") as f:
-        np.savetxt(f, y)
+    # with open("src/adaptive/test/y.txt", "wb") as f:
+    #     np.savetxt(f, y)
         
     # Do the mean over the channels of y
     y = (y[:, 0] + y[:, 1] + y[:, 2]) / 3
@@ -326,8 +326,9 @@ def test_adaptive_filter_single_sample_tapir():
     # Do the mean over the channels of y_single_sample
     y_single_sample = (y_single_sample[:, 0] + y_single_sample[:, 1] + y_single_sample[:, 2]) / 3
 
-    with open("src/adaptive/test/y_single_sample.txt", "wb") as f:
-        np.savetxt(f, y)
+    # with open("src/adaptive/test/y_single_sample.txt", "wb") as f:
+    #     np.savetxt(f, y)
+
     mse = np.mean((y_single_sample - output_signal) ** 2)
     mae = np.mean(np.abs(y_single_sample - output_signal))
     max_abs_diff = np.max(np.abs(y_single_sample - output_signal))
@@ -358,5 +359,4 @@ def test_adaptive_filter_simple():
     y_single_sample = (y_single_sample[:, 0] + y_single_sample[:, 1] + y_single_sample[:, 2]) / 3
 
 if __name__ == "__main__":
-    # pytest.main()
-    test_adaptive_filter_single_sample()
+    pytest.main()
