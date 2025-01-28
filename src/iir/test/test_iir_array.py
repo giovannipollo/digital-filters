@@ -11,7 +11,7 @@ from iir_array.iir_array import IIRArray
 from iir_single_sample.iir_single_sample import IIRSingleSample
 from iir.iir_window_array.iir_window_array import IIRWindowArray
 from utils.coefficient import split_iir_filter
-
+from utils.coefficient import compute_impulse_response_coefficient
 
 def test_apply_iir_filter_array():
     # Load input signal
@@ -122,6 +122,76 @@ def test_apply_iir_filter_single_sample():
     assert mae < 1e-5
     assert max_abs_diff < 1e-5
 
+def test_apply_iir_filter_single_sample_tapir():
+    
+    # Load coefficients
+    b, a = compute_impulse_response_coefficient(
+        filter_order=4,
+        fs=32,
+        fc=[0.4, 4],
+        band_type="bandpass",
+    )
+
+    for i in range(15):
+        # Load input signal
+        with open(f"src/iir/test/considered_ppg/considered_ppg_patient_{i + 1}.txt", "rb") as f:
+            input_signal = np.loadtxt(f)
+        
+        with open(f"src/iir/test/butterworth_ppg/butterworth_ppg_patient_{i + 1}.txt", "rb") as f:
+            butterworth_ppg = np.loadtxt(f)
+
+        # Create IIRSingleSample instance and apply filter
+        iir_single_sample = IIRSingleSample(b=b, a=a, filter_order=len(b) - 1)
+        y = np.zeros_like(input_signal)
+        for i in range(len(input_signal)):
+            y[i] = iir_single_sample.apply_iir_filter(x=input_signal[i])
+
+        # Compute the expected output signal with scipy
+        y_scipy = signal.lfilter(b=b, a=a, x=input_signal)
+
+        # Compute the mean squared error
+        mse = np.mean((y - y_scipy) ** 2)
+        mae = np.mean(np.abs(y - y_scipy))
+        max_abs_diff = np.max(np.abs(y - y_scipy))
+
+        # print(f"Patient {i + 1}")
+        # print(f"MSE: {mse}")
+        # print(f"MAE: {mae}")
+        # print(f"Max abs diff: {max_abs_diff}")
+        # print("--------------------")
+        
+        assert mse < 1e-10
+        assert mae < 1e-5
+        assert max_abs_diff < 1e-4
+
+        mse = np.mean((y - butterworth_ppg) ** 2)
+        mae = np.mean(np.abs(y - butterworth_ppg))
+        max_abs_diff = np.max(np.abs(y - butterworth_ppg))
+
+        # print(f"MSE: {mse}")
+        # print(f"MAE: {mae}")
+        # print(f"Max abs diff: {max_abs_diff}")
+        # print("--------------------")
+
+        assert mse < 1e-10
+        assert mae < 1e-5
+        assert max_abs_diff < 1e-4
+
+        mse = np.mean((y_scipy - butterworth_ppg) ** 2)
+        mae = np.mean(np.abs(y_scipy - butterworth_ppg))
+        max_abs_diff = np.max(np.abs(y_scipy - butterworth_ppg))
+
+        # print(f"MSE: {mse}")
+        # print(f"MAE: {mae}")
+        # print(f"Max abs diff: {max_abs_diff}")
+        # print("--------------------")
+
+        assert mse < 1e-10
+        assert mae < 1e-5
+        assert max_abs_diff < 1e-4
+
+
+
 
 def test_4th_order_coefficient():
     # Load coefficients
@@ -171,5 +241,7 @@ def test_double_2nd_order_filter():
     assert mae < 1e-5
     assert max_abs_diff < 1e-4
 
+
 if __name__ == "__main__":
-    pytest.main()
+    # pytest.main()
+    test_apply_iir_filter_single_sample_tapir()
