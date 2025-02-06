@@ -163,3 +163,5 @@ cython_debug/
 .vscode/
 *.png
 .DS_Store
+.idea/
+cmake-build-debug/
